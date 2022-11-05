@@ -2,17 +2,17 @@
 
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
+
 import "./RewardToken.sol";
 import "../DamnValuableToken.sol";
 import "./AccountingToken.sol";
-
 /**
  * @title TheRewarderPool
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
-
  */
-contract TheRewarderPool {
 
+contract TheRewarderPool {
     // Minimum duration of each round of rewards in seconds
     uint256 private constant REWARDS_ROUND_MIN_DURATION = 5 days;
 
@@ -27,7 +27,7 @@ contract TheRewarderPool {
     // Token used for internal accounting and snapshots
     // Pegged 1:1 with the liquidity token
     AccountingToken public accToken;
-    
+
     // Token in which rewards are issued
     RewardToken public immutable rewardToken;
 
@@ -48,13 +48,12 @@ contract TheRewarderPool {
      */
     function deposit(uint256 amountToDeposit) external {
         require(amountToDeposit > 0, "Must deposit tokens");
-        
+
         accToken.mint(msg.sender, amountToDeposit);
+        console.log(amountToDeposit / 10 ** 18, "rewards");
         distributeRewards();
 
-        require(
-            liquidityToken.transferFrom(msg.sender, address(this), amountToDeposit)
-        );
+        require(liquidityToken.transferFrom(msg.sender, address(this), amountToDeposit));
     }
 
     function withdraw(uint256 amountToWithdraw) external {
@@ -65,23 +64,24 @@ contract TheRewarderPool {
     function distributeRewards() public returns (uint256) {
         uint256 rewards = 0;
 
-        if(isNewRewardsRound()) {
+        if (isNewRewardsRound()) {
             _recordSnapshot();
-        }        
-        
+        }
+
         uint256 totalDeposits = accToken.totalSupplyAt(lastSnapshotIdForRewards);
         uint256 amountDeposited = accToken.balanceOfAt(msg.sender, lastSnapshotIdForRewards);
-
+        // console.log(amountDeposited / 10 ** 18, "rewards1");
+        // console.log(totalDeposits, amountDeposited, "here");
         if (amountDeposited > 0 && totalDeposits > 0) {
             rewards = (amountDeposited * 100 * 10 ** 18) / totalDeposits;
-
-            if(rewards > 0 && !_hasRetrievedReward(msg.sender)) {
+            if (rewards > 0 && !_hasRetrievedReward(msg.sender)) {
                 rewardToken.mint(msg.sender, rewards);
+                // console.log(rewardToken.balanceOf(msg.sender) / 10 ** 18, "rewards");
                 lastRewardTimestamps[msg.sender] = block.timestamp;
             }
         }
 
-        return rewards;     
+        return rewards;
     }
 
     function _recordSnapshot() private {
@@ -92,8 +92,8 @@ contract TheRewarderPool {
 
     function _hasRetrievedReward(address account) private view returns (bool) {
         return (
-            lastRewardTimestamps[account] >= lastRecordedSnapshotTimestamp &&
-            lastRewardTimestamps[account] <= lastRecordedSnapshotTimestamp + REWARDS_ROUND_MIN_DURATION
+            lastRewardTimestamps[account] >= lastRecordedSnapshotTimestamp
+                && lastRewardTimestamps[account] <= lastRecordedSnapshotTimestamp + REWARDS_ROUND_MIN_DURATION
         );
     }
 
