@@ -53,7 +53,7 @@ describe("[Challenge] Selfie", function () {
     );
 
     await SelfiePoolAttacker.connect(attacker).Attack();
-    await ethers.provider.send("evm_increaseTime", [2 * 24 * 60 * 60]); // 5 days
+    await ethers.provider.send("evm_increaseTime", [2 * 24 * 60 * 60]); // 2 days
     await SelfiePoolAttacker.connect(attacker).withdraw();
   });
 
