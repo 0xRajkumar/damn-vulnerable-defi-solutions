@@ -21,17 +21,14 @@ contract PuppetV2Pool {
     address private _uniswapFactory;
     IERC20 private _token;
     IERC20 private _weth;
-    
+
     mapping(address => uint256) public deposits;
-        
+
     event Borrowed(address indexed borrower, uint256 depositRequired, uint256 borrowAmount, uint256 timestamp);
 
-    constructor (
-        address wethAddress,
-        address tokenAddress,
-        address uniswapPairAddress,
-        address uniswapFactoryAddress
-    ) public {
+    constructor(address wethAddress, address tokenAddress, address uniswapPairAddress, address uniswapFactoryAddress)
+        public
+    {
         _weth = IERC20(wethAddress);
         _token = IERC20(tokenAddress);
         _uniswapPair = uniswapPairAddress;
@@ -48,7 +45,7 @@ contract PuppetV2Pool {
 
         // Calculate how much WETH the user must deposit
         uint256 depositOfWETHRequired = calculateDepositOfWETHRequired(borrowAmount);
-        
+
         // Take the WETH
         _weth.transferFrom(msg.sender, address(this), depositOfWETHRequired);
 
@@ -66,9 +63,8 @@ contract PuppetV2Pool {
 
     // Fetch the price from Uniswap v2 using the official libraries
     function _getOracleQuote(uint256 amount) private view returns (uint256) {
-        (uint256 reservesWETH, uint256 reservesToken) = UniswapV2Library.getReserves(
-            _uniswapFactory, address(_weth), address(_token)
-        );
+        (uint256 reservesWETH, uint256 reservesToken) =
+            UniswapV2Library.getReserves(_uniswapFactory, address(_weth), address(_token));
         return UniswapV2Library.quote(amount.mul(10 ** 18), reservesToken, reservesWETH);
     }
 }
