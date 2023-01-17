@@ -4,9 +4,9 @@
 
 Featuring flash loans, price oracles, governance, NFTs, lending pools, smart contract wallets, timelocks, and more!
 
-## Play
+## Solutions for damn vulnerable defi.
 
-Visit [damnvulnerabledefi.xyz](https://damnvulnerabledefi.xyz)
+- Run Solution: `yarn unstoppable`
 
 ## Disclaimer
 
